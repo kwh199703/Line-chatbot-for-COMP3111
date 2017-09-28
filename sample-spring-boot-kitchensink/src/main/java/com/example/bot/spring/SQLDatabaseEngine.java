@@ -16,38 +16,39 @@ public class SQLDatabaseEngine extends DatabaseEngine {
 	String search(String text) throws Exception {
 		//Write your code here
 		String result = null;
-		BufferedReader br = null;
-		InputStreamReader isr = null;
+		Connection connection = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 		try {
-			isr = new InputStreamReader(
-                    this.getClass().getResourceAsStream(FILENAME));
-			br = new BufferedReader(isr);
-			String sCurrentLine;
-			
-			while (result == null && (sCurrentLine = br.readLine()) != null) {
-				String[] parts = sCurrentLine.split(":");
-				if (text.toLowerCase().equals(parts[0].toLowerCase())) {
-					result = parts[1];
+			connection = this.getConnection();
+			//2
+			stmt = connection.prepareStatement("SELECT * FROM chatbook");
+			//3
+			rs = stmt.executeQuery();
+			while (result == null && rs.next()) {
+				//String[] parts = sCurrentLine.split(":");
+				if (text.toLowerCase().equals(rs.getString(1).toLowerCase())) {
+					result = rs.getString(2);
 				}
 			}
-		} catch (IOException e) {
-			log.info("IOException while reading file: {}", e.toString());
+		} catch (Exception e) {
+			log.info("URISyntaxException while reading file: {}", e.toString());
 		} finally {
 			try {
-				if (br != null)
-					br.close();
-				if (isr != null)
-					isr.close();
-			} catch (IOException ex) {
-				log.info("IOException while closing file: {}", ex.toString());
+				if (rs.next())
+					rs.close();
+				if (stmt!=null)
+					stmt.close();
+				if (connection!=null)
+					connection.close();
+			} catch (Exception ex) {
+				log.info("URISyntaxException while closing file: {}", ex.toString());
 			}
 		}
 		if (result != null)
 			return result;
 		throw new Exception("NOT FOUND");
 	}
-	private final String FILENAME = "/static/database.txt";
-	
 	
 	private Connection getConnection() throws URISyntaxException, SQLException {
 		Connection connection;

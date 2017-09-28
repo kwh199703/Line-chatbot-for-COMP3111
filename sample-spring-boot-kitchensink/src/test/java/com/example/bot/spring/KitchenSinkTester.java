@@ -81,7 +81,7 @@ public class KitchenSinkTester {
 		boolean thrown = false;
 		String result = null;
 		try {
-			result = this.databaseEngine.search("Hi");
+			result = this.databaseEngine.search("Hi you");
 		} catch (Exception e) {
 			thrown = true;
 		}
@@ -89,30 +89,4 @@ public class KitchenSinkTester {
 		assertThat(result).isEqualTo("Hey, how things going?");
 	}
 	
-	@Test
-	public void testFound2() throws Exception {
-		boolean thrown = false;
-		String result = null;
-		try {
-			result = this.databaseEngine.search("I am fine");
-		} catch (Exception e) {
-			thrown = true;
-		}
-		assertThat(!thrown).isEqualTo(true);
-		assertThat(result).isEqualTo("Great!");
-	}
-	
-	
-	@Test
-	public void testFound4() throws Exception {
-		boolean thrown = false;
-		String result = null;
-		try {
-			result = this.databaseEngine.search("How is the grade of this course?");
-		} catch (Exception e) {
-			thrown = true;
-		}
-		assertThat(!thrown).isEqualTo(true);
-		assertThat(result).isEqualTo("This is absolute good grade for good student. And I am sure you are!");
-	}
 }
