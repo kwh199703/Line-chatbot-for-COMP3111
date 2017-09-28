@@ -5,6 +5,9 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.net.URISyntaxException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URI;
 
 @Slf4j
@@ -12,8 +15,38 @@ public class SQLDatabaseEngine extends DatabaseEngine {
 	@Override
 	String search(String text) throws Exception {
 		//Write your code here
-		return null;
+		String result = null;
+		BufferedReader br = null;
+		InputStreamReader isr = null;
+		try {
+			isr = new InputStreamReader(
+                    this.getClass().getResourceAsStream(FILENAME));
+			br = new BufferedReader(isr);
+			String sCurrentLine;
+			
+			while (result == null && (sCurrentLine = br.readLine()) != null) {
+				String[] parts = sCurrentLine.split(":");
+				if (text.toLowerCase().equals(parts[0].toLowerCase())) {
+					result = parts[1];
+				}
+			}
+		} catch (IOException e) {
+			log.info("IOException while reading file: {}", e.toString());
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+				if (isr != null)
+					isr.close();
+			} catch (IOException ex) {
+				log.info("IOException while closing file: {}", ex.toString());
+			}
+		}
+		if (result != null)
+			return result;
+		throw new Exception("NOT FOUND");
 	}
+	private final String FILENAME = "/static/database.txt";
 	
 	
 	private Connection getConnection() throws URISyntaxException, SQLException {
